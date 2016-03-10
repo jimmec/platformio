@@ -120,6 +120,9 @@ env.Replace(
         "-cb", "$UPLOAD_SPEED",
         "-cp", "$UPLOAD_PORT"
     ],
+    UPLOADERFLAGS_PY=[
+        "--port", "$UPLOAD_PORT"
+    ],
     UPLOADEROTAFLAGS=[
         "--debug",
         "--progress",
@@ -129,6 +132,7 @@ env.Replace(
 
     UPLOADCMD='"$UPLOADER" $UPLOADERFLAGS -cf $SOURCE',
     UPLOADOTACMD='"$PYTHONEXE" "$UPLOADEROTA" $UPLOADEROTAFLAGS -f $SOURCE',
+    UPLOADCMD_PY='esptool.py $UPLOADERFLAGS_PY write_flash 0x00000 $SOURCE',
 
     #
     # Misc
@@ -338,8 +342,16 @@ AlwaysBuild(target_size)
 target_upload = env.Alias(
     ["upload", "uploadlazy", "uploadfs"], target_firm,
     [lambda target, source, env: env.AutodetectUploadPort(), "$UPLOADCMD"])
-env.AlwaysBuild(target_upload)
+#env.AlwaysBuild(target_upload)
 
+#
+# Adding custom upload Target
+#
+
+target_upload_2 = env.Alias(
+    ["upload-py"], target_firm,
+    [lambda target, source, env: env.AutodetectUploadPort(), "$UPLOADCMD_PY"])
+env.AlwaysBuild(target_upload_2)
 
 #
 # Target: Define targets
